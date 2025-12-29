@@ -1,272 +1,148 @@
-import React, { useState } from 'react';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import { FilterParams } from '@/hooks/useFilters';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { X } from 'lucide-react';
 
-export interface FilterParams {
-  minPrice?: number;
-  maxPrice?: number;
-  propertyTypes?: string[];
-  location?: string;
-  bedrooms?: number;
-  baths?: number;
-}
-
-export interface FilterSidebarProps {
+interface FilterSidebarProps {
   filters: FilterParams;
-  onFilterChange: (filters: FilterParams) => void;
+  updateFilter: (key: keyof FilterParams, value: any) => void;
+  resetFilters: () => void;
+  uniqueCities: string[];
+  onClose?: () => void;
 }
 
-const PROPERTY_TYPES = ['House', 'Apartment', 'Condo', 'Townhouse', 'Land'];
+const bedroomOptions = [1, 2, 3, 4, 5];
+const propertyTypes = ['House', 'Apartment', 'Condo'];
 
-const BEDROOM_OPTIONS = [1, 2, 3, 4, 5];
-
-export function FilterSidebar({ filters, onFilterChange }: FilterSidebarProps) {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    price: true,
-    propertyType: true,
-    location: true,
-    bedrooms: false,
-  });
-
-  const toggleSection = (section: string) => {
-    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+export const FilterSidebar = ({
+  filters,
+  updateFilter,
+  resetFilters,
+  uniqueCities,
+  onClose,
+}: FilterSidebarProps) => {
+  const formatPrice = (price: number) => {
+    if (price >= 1000000) {
+      return `$${(price / 1000000).toFixed(1)}M`;
+    }
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(price);
   };
-
-  const handlePriceChange = (field: 'minPrice' | 'maxPrice', value: string) => {
-    const numValue = value ? parseInt(value, 10) : undefined;
-    onFilterChange({ ...filters, [field]: numValue });
-  };
-
-  const handleLocationChange = (value: string) => {
-    onFilterChange({ ...filters, location: value });
-  };
-
-  const handlePropertyTypeToggle = (type: string) => {
-    const currentTypes = filters.propertyTypes || [];
-    const newTypes = currentTypes.includes(type)
-      ? currentTypes.filter(t => t !== type)
-      : [...currentTypes, type];
-    onFilterChange({ ...filters, propertyTypes: newTypes });
-  };
-
-  const handleBedroomsChange = (beds: number) => {
-    onFilterChange({ 
-      ...filters, 
-      bedrooms: filters.bedrooms === beds ? undefined : beds 
-    });
-  };
-
-  const handleClearFilters = () => {
-    onFilterChange({});
-  };
-
-  const hasActiveFilters = Object.keys(filters).length > 0;
-
-  const SidebarContent = () => (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold flex items-center gap-2">
-          <Filter className="w-5 h-5 text-gray-600" />
-          Filters
-        </h2>
-        {hasActiveFilters && (
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleClearFilters}
-            className="text-sm text-gray-600 hover:text-gray-900"
-          >
-            Clear all
-          </Button>
-        )}
-      </div>
-
-      {/* Price Range Section */}
-      <div className="space-y-3">
-        <button
-          onClick={() => toggleSection('price')}
-          className="flex items-center justify-between w-full font-medium text-left text-gray-700 hover:text-gray-900 transition-colors"
-        >
-          Price Range
-          {expandedSections.price ? 
-            <ChevronUp className="w-4 h-4 text-gray-400" /> : 
-            <ChevronDown className="w-4 h-4 text-gray-400" />
-          }
-        </button>
-        {expandedSections.price && (
-          <div className="space-y-3 pt-2">
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-              <Input
-                type="number"
-                placeholder="Min price"
-                value={filters.minPrice || ''}
-                onChange={(e) => handlePriceChange('minPrice', e.target.value)}
-                className="pl-7"
-              />
-            </div>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-              <Input
-                type="number"
-                placeholder="Max price"
-                value={filters.maxPrice || ''}
-                onChange={(e) => handlePriceChange('maxPrice', e.target.value)}
-                className="pl-7"
-              />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Property Type Section */}
-      <div className="space-y-3">
-        <button
-          onClick={() => toggleSection('propertyType')}
-          className="flex items-center justify-between w-full font-medium text-left text-gray-700 hover:text-gray-900 transition-colors"
-        >
-          Property Type
-          {expandedSections.propertyType ? 
-            <ChevronUp className="w-4 h-4 text-gray-400" /> : 
-            <ChevronDown className="w-4 h-4 text-gray-400" />
-          }
-        </button>
-        {expandedSections.propertyType && (
-          <div className="flex flex-wrap gap-2 pt-2">
-            {PROPERTY_TYPES.map(type => {
-              const isSelected = (filters.propertyTypes || []).includes(type);
-              return (
-                <Badge
-                  key={type}
-                  variant={isSelected ? 'default' : 'outline'}
-                  className={`cursor-pointer transition-all hover:shadow-sm ${
-                    isSelected 
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600' 
-                      : 'hover:bg-gray-50 border-gray-200 text-gray-700'
-                  }`}
-                  onClick={() => handlePropertyTypeToggle(type)}
-                >
-                  {type}
-                </Badge>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Bedrooms Section */}
-      <div className="space-y-3">
-        <button
-          onClick={() => toggleSection('bedrooms')}
-          className="flex items-center justify-between w-full font-medium text-left text-gray-700 hover:text-gray-900 transition-colors"
-        >
-          Bedrooms
-          {expandedSections.bedrooms ? 
-            <ChevronUp className="w-4 h-4 text-gray-400" /> : 
-            <ChevronDown className="w-4 h-4 text-gray-400" />
-          }
-        </button>
-        {expandedSections.bedrooms && (
-          <div className="flex flex-wrap gap-2 pt-2">
-            {BEDROOM_OPTIONS.map(beds => {
-              const isSelected = filters.bedrooms === beds;
-              return (
-                <Badge
-                  key={beds}
-                  variant={isSelected ? 'default' : 'outline'}
-                  className={`cursor-pointer transition-all hover:shadow-sm ${
-                    isSelected 
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600' 
-                      : 'hover:bg-gray-50 border-gray-200 text-gray-700'
-                  }`}
-                  onClick={() => handleBedroomsChange(beds)}
-                >
-                  {beds}+
-                </Badge>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Location Section */}
-      <div className="space-y-3">
-        <button
-          onClick={() => toggleSection('location')}
-          className="flex items-center justify-between w-full font-medium text-left text-gray-700 hover:text-gray-900 transition-colors"
-        >
-          Location
-          {expandedSections.location ? 
-            <ChevronUp className="w-4 h-4 text-gray-400" /> : 
-            <ChevronDown className="w-4 h-4 text-gray-400" />
-          }
-        </button>
-        {expandedSections.location && (
-          <div className="pt-2">
-            <Input
-              type="text"
-              placeholder="City, state, or ZIP code"
-              value={filters.location || ''}
-              onChange={(e) => handleLocationChange(e.target.value)}
-            />
-          </div>
-        )}
-      </div>
-
-      {/* Active Filters Summary */}
-      {hasActiveFilters && (
-        <div className="pt-4 border-t border-gray-200">
-          <p className="text-sm text-gray-500 mb-2">
-            {Object.keys(filters).length} filter{Object.keys(filters).length !== 1 ? 's' : ''} applied
-          </p>
-        </div>
-      )}
-    </div>
-  );
 
   return (
-    <>
-      {/* Mobile Toggle Button */}
-      <div className="lg:hidden mb-4">
-        <Button
-          onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="w-full flex items-center justify-center gap-2"
-          variant="outline"
-        >
-          <Filter className="w-4 h-4" />
-          {isMobileOpen ? 'Hide Filters' : 'Show Filters'}
-          {hasActiveFilters && (
-            <span className="ml-1 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {Object.keys(filters).length}
-            </span>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Filters</h2>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={resetFilters}>
+            Reset
+          </Button>
+          {onClose && (
+            <Button variant="ghost" size="sm" className="lg:hidden p-2" onClick={onClose}>
+              <X className="h-5 w-5" />
+            </Button>
           )}
-        </Button>
+        </div>
       </div>
 
-      {/* Sidebar */}
-      <aside
-        className={`
-          ${isMobileOpen ? 'block' : 'hidden'}
-          lg:block
-          w-full
-          lg:w-72
-          xl:w-80
-          bg-white
-          p-6
-          rounded-xl
-          border border-gray-200
-          shadow-sm
-          h-fit
-          sticky
-          top-4
-        `}
-      >
-        <SidebarContent />
-      </aside>
-    </>
+      {/* City Filter */}
+      <div className="space-y-3">
+        <Label className="text-sm font-medium">City</Label>
+        <div className="flex flex-wrap gap-2">
+          {uniqueCities.map((city) => (
+            <Badge
+              key={city}
+              variant={filters.city === city ? 'default' : 'outline'}
+              className="cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={() => updateFilter('city', filters.city === city ? '' : city)}
+            >
+              {city}
+            </Badge>
+          ))}
+          {uniqueCities.length === 0 && (
+            <span className="text-sm text-gray-500">No cities available</span>
+          )}
+        </div>
+      </div>
+
+      {/* Price Range */}
+      <div className="space-y-3">
+        <Label className="text-sm font-medium">Price Range</Label>
+        <div className="px-2">
+          <Slider
+            min={0}
+            max={5000000}
+            step={50000}
+            value={[filters.maxPrice]}
+            onValueChange={([value]) => updateFilter('maxPrice', value)}
+            className="w-full"
+          />
+        </div>
+        <div className="flex justify-between text-sm text-gray-600">
+          <span>{formatPrice(filters.minPrice)}</span>
+          <span className="font-medium">Up to {formatPrice(filters.maxPrice)}</span>
+        </div>
+      </div>
+
+      {/* Property Type */}
+      <div className="space-y-3">
+        <Label className="text-sm font-medium">Property Type</Label>
+        <div className="space-y-2">
+          {propertyTypes.map((type) => (
+            <div key={type} className="flex items-center space-x-3">
+              <Checkbox
+                id={`type-${type}`}
+                checked={filters.propertyTypes.includes(type)}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    updateFilter('propertyTypes', [...filters.propertyTypes, type]);
+                  } else {
+                    updateFilter(
+                      'propertyTypes',
+                      filters.propertyTypes.filter((t) => t !== type)
+                    );
+                  }
+                }}
+              />
+              <Label
+                htmlFor={`type-${type}`}
+                className="text-sm cursor-pointer font-normal"
+              >
+                {type}
+              </Label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bedrooms */}
+      <div className="space-y-3">
+        <Label className="text-sm font-medium">Bedrooms</Label>
+        <div className="flex flex-wrap gap-2">
+          {bedroomOptions.map((beds) => (
+            <Badge
+              key={beds}
+              variant={filters.bedrooms.includes(beds) ? 'default' : 'outline'}
+              className="cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={() => {
+                if (filters.bedrooms.includes(beds)) {
+                  updateFilter('bedrooms', filters.bedrooms.filter((b) => b !== beds));
+                } else {
+                  updateFilter('bedrooms', [...filters.bedrooms, beds]);
+                }
+              }}
+            >
+              {beds} {beds === 1 ? 'Bed' : 'Beds'}
+            </Badge>
+          ))}
+        </div>
+      </div>
+    </div>
   );
-}
+};
