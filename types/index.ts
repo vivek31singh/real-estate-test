@@ -1,48 +1,39 @@
-export interface Address {
-  street: string;
-  city: string;
-  state: string;
-  zip: string;
-}
-
-export interface Agent {
-  name: string;
-  email: string;
-  phone: string;
-}
-
-export interface PropertySpecs {
-  beds: number;
-  baths: number;
-  sqft: number;
-  type: 'House' | 'Apartment' | 'Condo';
-}
-
 export interface Property {
   id: string;
   title: string;
   description: string;
   price: number;
-  address: Address;
-  specs: PropertySpecs;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+  specs: {
+    beds: number;
+    baths: number;
+    sqft: number;
+    type: 'House' | 'Apartment' | 'Condo' | 'Townhouse' | 'Land';
+  };
   images: string[];
-  agent: Agent;
+  agent: {
+    name: string;
+    email: string;
+    phone: string;
+  };
   listedDate: string;
 }
 
 export interface FilterParams {
   minPrice?: number;
   maxPrice?: number;
-  city?: string;
-  state?: string;
-  type?: 'House' | 'Apartment' | 'Condo';
-  minBeds?: number;
-  minBaths?: number;
-  minSqft?: number;
+  propertyTypes?: string[];
+  location?: string;
+  bedrooms?: number;
+  baths?: number;
 }
 
-export interface FilterOptions {
-  sortBy?: 'price-asc' | 'price-desc' | 'date-desc' | 'date-asc' | 'sqft-desc';
-  limit?: number;
-  offset?: number;
+export interface SortOption {
+  value: string;
+  label: string;
 }
