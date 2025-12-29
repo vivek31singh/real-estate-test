@@ -33,10 +33,9 @@ export interface Property {
 export interface FilterParams {
   minPrice?: number;
   maxPrice?: number;
-  beds?: number;
-  baths?: number;
-  type?: 'House' | 'Apartment' | 'Condo' | 'All';
   city?: string;
   state?: string;
-  searchQuery?: string;
+  type?: 'House' | 'Apartment' | 'Condo';
+  minBeds?: number;
+  maxBeds?: number;
 }
