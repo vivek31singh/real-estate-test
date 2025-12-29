@@ -1,81 +1,96 @@
+"use client";
+
 import Link from 'next/link';
-import Image from 'next/image';
+import { Heart, MapPin, Bed, Bath, Maximize } from 'lucide-react';
+import { useFavorites } from '@/hooks/useFavorites';
 import { Property } from '@/types';
-import { Bed, Bath, Square } from 'lucide-react';
 
 interface PropertyCardProps {
   property: Property;
 }
 
-export const PropertyCard = ({ property }: PropertyCardProps) => {
+const PropertyCard = ({ property }: PropertyCardProps) => {
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const favorite = isFavorite(property.id);
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleFavorite(property.id);
+  };
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price);
   };
 
-  const formatAddress = (property: Property) => {
-    const { street, city, state } = property.address;
-    return `${street}, ${city}, ${state}`;
-  };
-
   return (
-    <Link href={`/property/${property.id}`} className="group">
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:shadow-gray-200/50">
-        {/* Property Image */}
-        <div className="relative h-64 w-full overflow-hidden bg-gray-100">
-          <Image
-            src={property.images[0] || '/images/placeholder-property.jpg'}
-            alt={property.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+    <Link href={`/property/${property.id}`}>
+      <div className="group relative overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+        {/* Favorite Button */}
+        <button
+          onClick={handleFavoriteClick}
+          className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 p-2 text-gray-600 shadow-md transition-all duration-200 hover:scale-110 hover:bg-white"
+          aria-label={favorite ? 'Remove from favorites' : 'Add to favorites'}
+        >
+          <Heart
+            className={`h-5 w-5 transition-colors duration-200 ${
+              favorite 
+                ? 'fill-red-500 text-red-500' 
+                : 'fill-none text-gray-600 group-hover:text-red-400'
+            }`}
           />
-          <div className="absolute top-4 left-4">
-            <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-gray-700 backdrop-blur-sm">
+        </button>
+
+        {/* Property Image */}
+        <div className="relative h-56 overflow-hidden bg-gray-200">
+          <img
+            src={property.images[0]}
+            alt={property.title}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <div className="absolute bottom-3 left-3 flex gap-2">
+            <span className="rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
               {property.specs.type}
             </span>
           </div>
         </div>
 
-        {/* Property Details */}
-        <div className="p-5">
-          {/* Price */}
-          <div className="mb-2">
-            <span className="text-2xl font-bold text-gray-900">
+        {/* Property Info */}
+        <div className="p-4">
+          <div className="mb-2 flex items-start justify-between">
+            <p className="text-2xl font-bold text-gray-900">
               {formatPrice(property.price)}
+            </p>
+          </div>
+          
+          <h3 className="mb-2 truncate text-lg font-semibold text-gray-900 group-hover:text-blue-600">
+            {property.title}
+          </h3>
+          
+          <div className="mb-4 flex items-center text-sm text-gray-600">
+            <MapPin className="mr-1 h-4 w-4 flex-shrink-0" />
+            <span className="truncate">
+              {property.address.city}, {property.address.state}
             </span>
           </div>
 
-          {/* Title */}
-          <h3 className="mb-1 text-lg font-semibold text-gray-900 line-clamp-1">
-            {property.title}
-          </h3>
-
-          {/* Address */}
-          <p className="mb-4 text-sm text-gray-600 line-clamp-1">
-            {formatAddress(property)}
-          </p>
-
-          {/* Specs */}
-          <div className="flex items-center gap-4 border-t border-gray-100 pt-4">
-            <div className="flex items-center gap-1.5 text-gray-600">
+          {/* Property Specs */}
+          <div className="flex items-center justify-between border-t border-gray-100 pt-4 text-sm text-gray-600">
+            <div className="flex items-center gap-1">
               <Bed className="h-4 w-4" />
-              <span className="text-sm font-medium">{property.specs.beds}</span>
-              <span className="text-sm text-gray-500">beds</span>
+              <span>{property.specs.beds} Beds</span>
             </div>
-            <div className="flex items-center gap-1.5 text-gray-600">
+            <div className="flex items-center gap-1">
               <Bath className="h-4 w-4" />
-              <span className="text-sm font-medium">{property.specs.baths}</span>
-              <span className="text-sm text-gray-500">baths</span>
+              <span>{property.specs.baths} Baths</span>
             </div>
-            <div className="flex items-center gap-1.5 text-gray-600">
-              <Square className="h-4 w-4" />
-              <span className="text-sm font-medium">{property.specs.sqft.toLocaleString()}</span>
-              <span className="text-sm text-gray-500">sqft</span>
+            <div className="flex items-center gap-1">
+              <Maximize className="h-4 w-4" />
+              <span>{property.specs.sqft.toLocaleString()} sqft</span>
             </div>
           </div>
         </div>
@@ -83,3 +98,5 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
     </Link>
   );
 };
+
+export default PropertyCard;
