@@ -1,15 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Image as ImageIcon, Maximize2, ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import {
-  Modal,
-  ModalContent,
-  ModalOverlay,
-  ModalPortal,
-  ModalClose,
-} from '@/components/ui/Modal';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 
 interface ImageGalleryProps {
   images: string[];
@@ -17,134 +10,89 @@ interface ImageGalleryProps {
 }
 
 export function ImageGallery({ images, title }: ImageGalleryProps) {
-  const [selectedImage, setSelectedImage] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const goToPrevious = () => {
+    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const goToNext = () => {
+    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+
+  const goToImage = (index: number) => {
+    setCurrentIndex(index);
+  };
 
   if (!images || images.length === 0) {
     return (
-      <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-        <ImageIcon className="w-8 h-8 text-gray-400" />
-        <span className="ml-2 text-gray-500">No images available</span>
+      <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
+        <p className="text-gray-500">No images available</p>
       </div>
     );
   }
 
-  const handleThumbnailClick = (index: number) => {
-    setSelectedImage(index);
-  };
-
-  const handleMainImageClick = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleThumbnailModalClick = (index: number) => {
-    setSelectedImage(index);
-    setIsModalOpen(true);
-  };
-
-  const goToPreviousImage = () => {
-    setSelectedImage((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
-
-  const goToNextImage = () => {
-    setSelectedImage((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-  };
-
   return (
-    <>
-      <div className="space-y-4">
-        {/* Main Image */}
-        <div className="relative group cursor-pointer" onClick={handleMainImageClick}>
-          <img
-            src={images[selectedImage]}
-            alt={`${title} - Image ${selectedImage + 1}`}
-            className="w-full aspect-video object-cover rounded-lg"
-          />
-          <button
-            onClick={handleMainImageClick}
-            className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <Maximize2 className="w-5 h-5" />
-          </button>
-          <div className="absolute bottom-4 left-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-            {selectedImage + 1} / {images.length}
-          </div>
-        </div>
+    <div className="space-y-4">
+      {/* Main Image */}
+      <div className="relative aspect-video rounded-lg overflow-hidden bg-gray-100 group">
+        <img
+          src={images[currentIndex]}
+          alt={`${title} - Image ${currentIndex + 1}`}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        
+        {/* Navigation Buttons */}
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={goToPrevious}
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition-all opacity-0 group-hover:opacity-100"
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="w-5 h-5 text-gray-800" />
+            </button>
+            <button
+              onClick={goToNext}
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition-all opacity-0 group-hover:opacity-100"
+              aria-label="Next image"
+            >
+              <ChevronRight className="w-5 h-5 text-gray-800" />
+            </button>
+          </>
+        )}
 
-        {/* Thumbnails */}
-        <div className="grid grid-cols-4 gap-2">
+        {/* Image Counter */}
+        {images.length > 1 && (
+          <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm font-medium">
+            {currentIndex + 1} / {images.length}
+          </div>
+        )}
+      </div>
+
+      {/* Thumbnail Gallery */}
+      {images.length > 1 && (
+        <div className="flex gap-2 overflow-x-auto pb-2">
           {images.map((image, index) => (
             <button
               key={index}
-              onClick={() => handleThumbnailModalClick(index)}
-              className={cn(
-                "aspect-video rounded-lg overflow-hidden border-2 transition-all relative group",
-                selectedImage === index
-                  ? "border-blue-500"
-                  : "border-transparent hover:border-gray-300"
-              )}
+              onClick={() => goToImage(index)}
+              className={`flex-shrink-0 relative w-24 h-16 rounded-md overflow-hidden transition-all ${
+                index === currentIndex
+                  ? 'ring-2 ring-blue-600 ring-offset-2'
+                  : 'opacity-60 hover:opacity-100'
+              }`}
+              aria-label={`Go to image ${index + 1}`}
             >
               <img
                 src={image}
                 alt={`${title} - Thumbnail ${index + 1}`}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <Maximize2 className="w-6 h-6 text-white" />
-              </div>
             </button>
           ))}
         </div>
-      </div>
-
-      {/* Modal / Lightbox */}
-      <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <ModalPortal>
-          <ModalOverlay className="bg-black/90" />
-          <ModalContent className="max-w-6xl w-full p-0 border-0 bg-transparent shadow-none">
-            <div className="relative w-full flex items-center justify-center">
-              {/* Close Button */}
-              <ModalClose className="absolute top-4 right-4 z-10 bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors">
-                <X className="w-6 h-6" />
-              </ModalClose>
-
-              {/* Previous Button */}
-              {images.length > 1 && (
-                <button
-                  onClick={goToPreviousImage}
-                  className="absolute left-4 z-10 bg-white/10 hover:bg-white/20 text-white rounded-full p-3 transition-colors"
-                >
-                  <ChevronLeft className="w-6 h-6" />
-                </button>
-              )}
-
-              {/* Image */}
-              <img
-                src={images[selectedImage]}
-                alt={`${title} - Full view`}
-                className="w-full max-h-[85vh] object-contain rounded-lg"
-              />
-
-              {/* Next Button */}
-              {images.length > 1 && (
-                <button
-                  onClick={goToNextImage}
-                  className="absolute right-4 z-10 bg-white/10 hover:bg-white/20 text-white rounded-full p-3 transition-colors"
-                >
-                  <ChevronRight className="w-6 h-6" />
-                </button>
-              )}
-
-              {/* Image Counter */}
-              {images.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm">
-                  {selectedImage + 1} / {images.length}
-                </div>
-              )}
-            </div>
-          </ModalContent>
-        </ModalPortal>
-      </Modal>
-    </>
+      )}
+    </div>
   );
 }

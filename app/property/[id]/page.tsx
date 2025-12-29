@@ -1,17 +1,13 @@
 import { getPropertyById } from '@/lib/data';
 import { ImageGallery } from '@/components/property/ImageGallery';
+import { PropertyHeader } from '@/components/property/PropertyHeader';
+import { PropertyStats } from '@/components/property/PropertyStats';
+import { Description } from '@/components/property/Description';
 import { AgentCard } from '@/components/property/AgentCard';
-import { 
-  Bed, 
-  Bath, 
-  Maximize, 
-  Calendar,
-  MapPin,
-  Home,
-  ArrowLeft
-} from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 
 interface PropertyPageProps {
   params: {
@@ -26,163 +22,85 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     notFound();
   }
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-    }).format(price);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation Breadcrumb */}
-      <div className="bg-white border-b border-gray-100">
+      {/* Back Navigation */}
+      <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link 
             href="/" 
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors text-sm"
+            className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Properties
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Listings
           </Link>
         </div>
       </div>
 
+      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
+          {/* Main Content Area - Left Column */}
           <div className="lg:col-span-2 space-y-8">
             {/* Image Gallery */}
             <ImageGallery images={property.images} title={property.title} />
 
             {/* Property Header */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                    {property.title}
-                  </h1>
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <MapPin className="w-4 h-4" />
-                    <address className="not-italic">
-                      {property.address.street}, {property.address.city}, {property.address.state} {property.address.zip}
-                    </address>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-3xl font-bold text-blue-600">
-                    {formatPrice(property.price)}
-                  </p>
-                </div>
-              </div>
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <PropertyHeader
+                title={property.title}
+                price={property.price}
+                address={property.address}
+                type={property.specs.type}
+              />
+            </div>
 
-              {/* Property Stats */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                    <Bed className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">{property.specs.beds}</p>
-                    <p className="text-sm text-gray-500">Beds</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                    <Bath className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">{property.specs.baths}</p>
-                    <p className="text-sm text-gray-500">Baths</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                    <Maximize className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">{property.specs.sqft.toLocaleString()}</p>
-                    <p className="text-sm text-gray-500">Sq Ft</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                    <Home className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">{property.specs.type}</p>
-                    <p className="text-sm text-gray-500">Type</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Listed Date */}
-              <div className="flex items-center gap-2 mt-4 pt-4 text-sm text-gray-500">
-                <Calendar className="w-4 h-4" />
-                <span>Listed on {formatDate(property.listedDate)}</span>
-              </div>
+            {/* Property Stats */}
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <PropertyStats
+                beds={property.specs.beds}
+                baths={property.specs.baths}
+                sqft={property.specs.sqft}
+                listedDate={property.listedDate}
+              />
             </div>
 
             {/* Description */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Description</h2>
-              <div className="prose prose-gray max-w-none">
-                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                  {property.description}
-                </p>
-              </div>
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <Description description={property.description} />
             </div>
 
             {/* Map Placeholder */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="p-6 border-b border-gray-100">
-                <h2 className="text-xl font-semibold text-gray-900">Location</h2>
-              </div>
-              <div className="aspect-video bg-gray-100 flex items-center justify-center">
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Location</h2>
+              <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
                 <div className="text-center text-gray-400">
                   <MapPin className="w-12 h-12 mx-auto mb-2" />
                   <p className="text-sm">Interactive map coming soon</p>
                   <p className="text-xs mt-1">{property.address.city}, {property.address.state}</p>
                 </div>
               </div>
+              <div className="mt-4">
+                <address className="not-italic text-gray-600">
+                  <p className="font-medium text-gray-900">{property.address.street}</p>
+                  <p>{property.address.city}, {property.address.state} {property.address.zip}</p>
+                </address>
+              </div>
             </div>
           </div>
 
-          {/* Sidebar */}
+          {/* Sidebar - Right Column */}
           <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <AgentCard agent={property.agent} propertyTitle={property.title} />
-            </div>
+            <AgentCard
+              name={property.agent.name}
+              email={property.agent.email}
+              phone={property.agent.phone}
+              image={property.agent.image}
+              propertyTitle={property.title}
+            />
           </div>
         </div>
       </div>
     </div>
   );
-}
-
-export async function generateMetadata({ params }: PropertyPageProps) {
-  const property = await getPropertyById(params.id);
-  
-  if (!property) {
-    return {
-      title: 'Property Not Found',
-    };
-  }
-
-  return {
-    title: `${property.title} | Real Estate`,
-    description: property.description,
-  };
 }
