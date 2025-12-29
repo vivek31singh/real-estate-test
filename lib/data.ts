@@ -1,4 +1,32 @@
-import { Property } from '@/types';
+import { Property, FilterParams, Agent } from '@/types';
+
+// Agent data for mock assignments
+const agents: Agent[] = [
+  {
+    id: 'agent-1',
+    name: 'Sarah Johnson',
+    email: 'sarah.johnson@realestate.com',
+    phone: '(555) 123-4567',
+    avatar: '/images/agents/sarah.jpg',
+    company: 'Premier Properties'
+  },
+  {
+    id: 'agent-2',
+    name: 'Michael Chen',
+    email: 'michael.chen@realestate.com',
+    phone: '(555) 234-5678',
+    avatar: '/images/agents/michael.jpg',
+    company: 'Golden Gate Realty'
+  },
+  {
+    id: 'agent-3',
+    name: 'Emily Rodriguez',
+    email: 'emily.rodriguez@realestate.com',
+    phone: '(555) 345-6789',
+    avatar: '/images/agents/emily.jpg',
+    company: 'Urban Living'
+  }
+];
 
 // Mock property data with variety in specs
 const propertiesData: Property[] = [
@@ -11,298 +39,443 @@ const propertiesData: Property[] = [
       street: '123 Main Street',
       city: 'San Francisco',
       state: 'CA',
-      zip: '94102',
+      zip: '94102'
     },
     specs: {
       beds: 2,
       baths: 2,
       sqft: 1200,
-      type: 'Apartment',
+      type: 'Apartment'
     },
     images: [
-      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800',
-      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800',
-      'https://images.unsplash.com/photo-1484154218962-a1c002085d2f?w=800',
-      'https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=800',
+      '/images/properties/loft-1.jpg',
+      '/images/properties/loft-2.jpg',
+      '/images/properties/loft-3.jpg',
+      '/images/properties/loft-4.jpg'
     ],
-    agent: {
-      name: 'Sarah Johnson',
-      email: 'sarah.j@realestate.com',
-      phone: '(415) 555-0123',
-    },
-    listedDate: '2024-01-15',
+    agent: agents[0],
+    listedDate: '2024-01-15'
   },
   {
     id: '2',
-    title: 'Spacious Family Home',
-    description: 'Beautiful 4-bedroom family home with a large backyard, updated kitchen, and hardwood floors throughout. Perfect for families looking for space and comfort in a quiet neighborhood.',
-    price: 750000,
+    title: 'Suburban Family Home',
+    description: 'Beautiful 4-bedroom family home in a quiet neighborhood. Features a spacious backyard, updated kitchen with granite countertops, and a two-car garage. Perfect for growing families.',
+    price: 650000,
     address: {
       street: '456 Oak Avenue',
-      city: 'Austin',
-      state: 'TX',
-      zip: '78701',
+      city: 'Palo Alto',
+      state: 'CA',
+      zip: '94301'
     },
     specs: {
       beds: 4,
       baths: 3,
       sqft: 2800,
-      type: 'House',
+      type: 'House'
     },
     images: [
-      'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800',
-      'https://images.unsplash.com/photo-1600596542815-2a4d9f6facb8?w=800',
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
-      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800',
+      '/images/properties/house-1.jpg',
+      '/images/properties/house-2.jpg',
+      '/images/properties/house-3.jpg'
     ],
-    agent: {
-      name: 'Michael Chen',
-      email: 'm.chen@realestate.com',
-      phone: '(512) 555-0456',
-    },
-    listedDate: '2024-02-01',
+    agent: agents[1],
+    listedDate: '2024-01-20'
   },
   {
     id: '3',
     title: 'Luxury Waterfront Condo',
-    description: 'Exclusive waterfront condo with stunning ocean views, private balcony, and resort-style amenities. Features modern design, high ceilings, and floor-to-ceiling windows.',
-    price: 1250000,
+    description: 'Exquisite waterfront condo with breathtaking bay views. High-end finishes throughout, private balcony, access to gym and pool. Resort-style living in the heart of the city.',
+    price: 950000,
     address: {
-      street: '789 Harbor View',
-      city: 'Miami',
-      state: 'FL',
-      zip: '33131',
+      street: '789 Bay Boulevard',
+      city: 'San Francisco',
+      state: 'CA',
+      zip: '94123'
     },
     specs: {
       beds: 3,
       baths: 2.5,
-      sqft: 2200,
-      type: 'Condo',
+      sqft: 1850,
+      type: 'Condo'
     },
     images: [
-      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800',
-      'https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=800',
-      'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800',
-      'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800',
+      '/images/properties/condo-1.jpg',
+      '/images/properties/condo-2.jpg',
+      '/images/properties/condo-3.jpg',
+      '/images/properties/condo-4.jpg'
     ],
-    agent: {
-      name: 'Emily Rodriguez',
-      email: 'emily.r@realestate.com',
-      phone: '(305) 555-0789',
-    },
-    listedDate: '2024-01-20',
+    agent: agents[2],
+    listedDate: '2024-02-01'
   },
   {
     id: '4',
-    title: 'Cozy Suburban Cottage',
-    description: 'Charming cottage with a white picket fence, flower garden, and cozy fireplace. Recently renovated with modern appliances while maintaining its original character.',
-    price: 325000,
+    title: 'Charming Victorian Townhouse',
+    description: 'Historic Victorian townhouse meticulously preserved with modern updates. Original hardwood floors, ornate moldings, and a private garden. Character meets convenience.',
+    price: 725000,
     address: {
-      street: '321 Maple Lane',
-      city: 'Portland',
-      state: 'OR',
-      zip: '97201',
+      street: '321 Heritage Lane',
+      city: 'San Francisco',
+      state: 'CA',
+      zip: '94117'
     },
     specs: {
-      beds: 2,
-      baths: 1,
-      sqft: 1100,
-      type: 'House',
+      beds: 3,
+      baths: 2,
+      sqft: 1950,
+      type: 'Townhouse'
     },
     images: [
-      'https://images.unsplash.com/photo-1599427303058-f04cbcf4756f?w=800',
-      'https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=800',
-      'https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800',
-      'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=800',
+      '/images/properties/townhouse-1.jpg',
+      '/images/properties/townhouse-2.jpg',
+      '/images/properties/townhouse-3.jpg'
     ],
-    agent: {
-      name: 'David Thompson',
-      email: 'd.tompson@realestate.com',
-      phone: '(503) 555-0321',
-    },
-    listedDate: '2024-02-10',
+    agent: agents[0],
+    listedDate: '2024-02-05'
   },
   {
     id: '5',
-    title: 'Urban Studio Apartment',
-    description: 'Efficient studio layout perfect for young professionals. Features murphy bed, modern kitchenette, and in-unit laundry. Building includes gym and rooftop access.',
-    price: 280000,
+    title: 'Cozy Studio Apartment',
+    description: 'Perfect starter home or investment property. Efficient layout with modern kitchenette, updated bathroom, and great natural light. Close to public transportation.',
+    price: 285000,
     address: {
-      street: '555 Market Street',
-      city: 'Seattle',
-      state: 'WA',
-      zip: '98101',
+      street: '555 Elm Street',
+      city: 'Oakland',
+      state: 'CA',
+      zip: '94612'
     },
     specs: {
       beds: 1,
       baths: 1,
       sqft: 550,
-      type: 'Apartment',
+      type: 'Apartment'
     },
     images: [
-      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800',
-      'https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=800',
-      'https://images.unsplash.com/photo-1560185008-a33f5c7b397a?w=800',
-      'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?w=800',
+      '/images/properties/studio-1.jpg',
+      '/images/properties/studio-2.jpg'
     ],
-    agent: {
-      name: 'Jessica Lee',
-      email: 'jessica.l@realestate.com',
-      phone: '(206) 555-0555',
-    },
-    listedDate: '2024-02-15',
+    agent: agents[1],
+    listedDate: '2024-02-10'
   },
   {
     id: '6',
-    title: 'Lakefront Estate',
-    description: 'Magnificent estate on private lakefront property with 200ft of water frontage. Features chef kitchen, wine cellar, home theater, and private dock.',
-    price: 2500000,
+    title: 'Modern Hillside Estate',
+    description: 'Spectacular hillside estate with panoramic city and ocean views. Open floor plan, chef's kitchen, home theater, and infinity pool. The ultimate luxury living experience.',
+    price: 2100000,
     address: {
-      street: '999 Lakeshore Drive',
-      city: 'Lake Tahoe',
+      street: '999 Summit Drive',
+      city: 'San Francisco',
       state: 'CA',
-      zip: '96150',
+      zip: '94115'
     },
     specs: {
       beds: 5,
       baths: 4.5,
       sqft: 4500,
-      type: 'House',
+      type: 'House'
     },
     images: [
-      'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800',
-      'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800',
-      'https://images.unsplash.com/photo-1600573472591-ee6c563aaec9?w=800',
-      'https://images.unsplash.com/photo-1600566753151-384129cf4e3e?w=800',
+      '/images/properties/estate-1.jpg',
+      '/images/properties/estate-2.jpg',
+      '/images/properties/estate-3.jpg',
+      '/images/properties/estate-4.jpg',
+      '/images/properties/estate-5.jpg'
     ],
-    agent: {
-      name: 'Robert Williams',
-      email: 'r.williams@realestate.com',
-      phone: '(530) 555-0999',
-    },
-    listedDate: '2024-01-25',
+    agent: agents[2],
+    listedDate: '2024-02-15'
   },
   {
     id: '7',
-    title: 'Modern City Penthouse',
-    description: 'Spectacular penthouse with 360-degree city views, private terrace, and smart home technology. Premium finishes and designer fixtures throughout.',
-    price: 1800000,
+    title: 'Urban Penthouse Suite',
+    description: 'Stunning penthouse with wraparound terrace and 360-degree views. Designer finishes, smart home technology, and exclusive building amenities. City living at its finest.',
+    price: 1650000,
     address: {
-      street: '777 Skyline Tower',
-      city: 'New York',
-      state: 'NY',
-      zip: '10001',
-    },
-    specs: {
-      beds: 3,
-      baths: 3.5,
-      sqft: 3000,
-      type: 'Condo',
-    },
-    images: [
-      'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=800',
-      'https://images.unsplash.com/photo-1600566752734-2a0cd66c6f23?w=800',
-      'https://images.unsplash.com/photo-1600596542815-2a4d9f6facb8?w=800',
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
-    ],
-    agent: {
-      name: 'Amanda Foster',
-      email: 'a.foster@realestate.com',
-      phone: '(212) 555-0777',
-    },
-    listedDate: '2024-02-05',
-  },
-  {
-    id: '8',
-    title: 'Charming Victorian Home',
-    description: 'Beautifully restored Victorian with original woodwork, stained glass, and wrap-around porch. Modern updates include central AC and updated electrical while preserving historic charm.',
-    price: 675000,
-    address: {
-      street: '222 Heritage Lane',
-      city: 'Boston',
-      state: 'MA',
-      zip: '02108',
-    },
-    specs: {
-      beds: 4,
-      baths: 2.5,
-      sqft: 2400,
-      type: 'House',
-    },
-    images: [
-      'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800',
-      'https://images.unsplash.com/photo-1600573472591-ee6c563aaec9?w=800',
-      'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800',
-      'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800',
-    ],
-    agent: {
-      name: 'Thomas Anderson',
-      email: 't.anderson@realestate.com',
-      phone: '(617) 555-0222',
-    },
-    listedDate: '2024-01-30',
-  },
-  {
-    id: '9',
-    title: 'Minimalist Beach House',
-    description: 'Contemporary beach house with open floor plan, walls of glass, and direct beach access. Features infinity pool, outdoor kitchen, and sunset views.',
-    price: 1450000,
-    address: {
-      street: '111 Ocean Drive',
-      city: 'San Diego',
+      street: '888 Skyline Tower',
+      city: 'San Francisco',
       state: 'CA',
-      zip: '92101',
+      zip: '94104'
     },
     specs: {
       beds: 3,
       baths: 3,
-      sqft: 2600,
-      type: 'House',
+      sqft: 2400,
+      type: 'Condo'
     },
     images: [
-      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800',
-      'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=800',
-      'https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800',
-      'https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=800',
+      '/images/properties/penthouse-1.jpg',
+      '/images/properties/penthouse-2.jpg',
+      '/images/properties/penthouse-3.jpg'
     ],
-    agent: {
-      name: 'Rachel Green',
-      email: 'r.green@realestate.com',
-      phone: '(619) 555-0111',
-    },
-    listedDate: '2024-02-08',
+    agent: agents[0],
+    listedDate: '2024-02-20'
   },
+  {
+    id: '8',
+    title: 'Beachfront Land Lot',
+    description: 'Prime beachfront lot with approved building plans. Rare opportunity to build your dream home steps from the sand. Unobstructed ocean views and private beach access.',
+    price: 850000,
+    address: {
+      street: '100 Coastal Highway',
+      city: 'Half Moon Bay',
+      state: 'CA',
+      zip: '94019'
+    },
+    specs: {
+      beds: 0,
+      baths: 0,
+      sqft: 8712,
+      type: 'Land'
+    },
+    images: [
+      '/images/properties/land-1.jpg',
+      '/images/properties/land-2.jpg'
+    ],
+    agent: agents[1],
+    listedDate: '2024-02-25'
+  },
+  {
+    id: '9',
+    title: 'Renovated Craftsman Home',
+    description: 'Beautifully restored Craftsman with modern amenities while maintaining original charm. Updated kitchen and bathrooms, refinished hardwoods, and a lovely front porch.',
+    price: 875000,
+    address: {
+      street: '444 Craftsman Way',
+      city: 'Berkeley',
+      state: 'CA',
+      zip: '94702'
+    },
+    specs: {
+      beds: 4,
+      baths: 2.5,
+      sqft: 2200,
+      type: 'House'
+    },
+    images: [
+      '/images/properties/craftsman-1.jpg',
+      '/images/properties/craftsman-2.jpg',
+      '/images/properties/craftsman-3.jpg'
+    ],
+    agent: agents[2],
+    listedDate: '2024-03-01'
+  },
+  {
+    id: '10',
+    title: 'Downtown Micro-Unit',
+    description: 'Efficient micro-unit in prime downtown location. Perfect for professionals seeking urban convenience. Modern design, built-in storage, and access to building amenities.',
+    price: 325000,
+    address: {
+      street: '200 Urban Street',
+      city: 'San Jose',
+      state: 'CA',
+      zip: '95113'
+    },
+    specs: {
+      beds: 1,
+      baths: 1,
+      sqft: 420,
+      type: 'Apartment'
+    },
+    images: [
+      '/images/properties/micro-1.jpg',
+      '/images/properties/micro-2.jpg'
+    ],
+    agent: agents[0],
+    listedDate: '2024-03-05'
+  },
+  {
+    id: '11',
+    title: 'Garden Townhouse',
+    description: 'Lovely townhouse with private garden and patio. Open living area, modern kitchen, and two spacious bedrooms. Quiet complex with excellent amenities.',
+    price: 595000,
+    address: {
+      street: '600 Garden Court',
+      city: 'Mountain View',
+      state: 'CA',
+      zip: '94040'
+    },
+    specs: {
+      beds: 2,
+      baths: 2.5,
+      sqft: 1450,
+      type: 'Townhouse'
+    },
+    images: [
+      '/images/properties/garden-1.jpg',
+      '/images/properties/garden-2.jpg',
+      '/images/properties/garden-3.jpg'
+    ],
+    agent: agents[1],
+    listedDate: '2024-03-10'
+  },
+  {
+    id: '12',
+    title: 'Tech Hub Condo',
+    description: 'Modern condo in the heart of Silicon Valley. Walking distance to tech companies, restaurants, and transit. Smart home features, gym access, and rooftop deck.',
+    price: 720000,
+    address: {
+      street: '350 Innovation Drive',
+      city: 'Sunnyvale',
+      state: 'CA',
+      zip: '94086'
+    },
+    specs: {
+      beds: 2,
+      baths: 2,
+      sqft: 1100,
+      type: 'Condo'
+    },
+    images: [
+      '/images/properties/tech-1.jpg',
+      '/images/properties/tech-2.jpg',
+      '/images/properties/tech-3.jpg'
+    ],
+    agent: agents[2],
+    listedDate: '2024-03-15'
+  }
 ];
 
+// Simulate network delay
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 /**
- * Simulates fetching all properties from an API
+ * Fetches all properties with optional filtering
+ * @param filters - Optional filter parameters
+ * @returns Promise resolving to filtered properties
  */
-export async function getProperties(): Promise<Property[]> {
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  return propertiesData;
+export async function getProperties(filters?: FilterParams): Promise<Property[]> {
+  await delay(300); // Simulate network latency
+
+  let filtered = [...propertiesData];
+
+  if (filters) {
+    // Price range filter
+    if (filters.minPrice !== undefined) {
+      filtered = filtered.filter(p => p.price >= filters.minPrice!);
+    }
+    if (filters.maxPrice !== undefined) {
+      filtered = filtered.filter(p => p.price <= filters.maxPrice!);
+    }
+
+    // Location filter (city)
+    if (filters.location) {
+      const searchTerm = filters.location.toLowerCase();
+      filtered = filtered.filter(
+        p => 
+          p.address.city.toLowerCase().includes(searchTerm) ||
+          p.address.state.toLowerCase().includes(searchTerm) ||
+          p.address.zip.includes(searchTerm)
+      );
+    }
+
+    // Property type filter
+    if (filters.propertyType) {
+      filtered = filtered.filter(p => p.specs.type === filters.propertyType);
+    }
+
+    // Bedrooms filter
+    if (filters.minBeds !== undefined) {
+      filtered = filtered.filter(p => p.specs.beds >= filters.minBeds!);
+    }
+    if (filters.maxBeds !== undefined) {
+      filtered = filtered.filter(p => p.specs.beds <= filters.maxBeds!);
+    }
+
+    // Bathrooms filter
+    if (filters.minBaths !== undefined) {
+      filtered = filtered.filter(p => p.specs.baths >= filters.minBaths!);
+    }
+
+    // Search query filter (title, description, address)
+    if (filters.searchQuery) {
+      const searchTerm = filters.searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        p =>
+          p.title.toLowerCase().includes(searchTerm) ||
+          p.description.toLowerCase().includes(searchTerm) ||
+          p.address.street.toLowerCase().includes(searchTerm) ||
+          p.address.city.toLowerCase().includes(searchTerm)
+      );
+    }
+  }
+
+  return filtered;
 }
 
 /**
- * Simulates fetching a single property by ID
+ * Fetches a single property by ID
+ * @param id - Property ID
+ * @returns Promise resolving to the property or undefined if not found
  */
-export async function getPropertyById(id: string): Promise<Property | null> {
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  return propertiesData.find((property) => property.id === id) || null;
+export async function getPropertyById(id: string): Promise<Property | undefined> {
+  await delay(200); // Simulate network latency
+  return propertiesData.find(property => property.id === id);
 }
 
 /**
- * Simulates searching properties by query
+ * Searches properties by text query
+ * @param query - Search query string
+ * @returns Promise resolving to matching properties
  */
 export async function searchProperties(query: string): Promise<Property[]> {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  const lowerQuery = query.toLowerCase();
+  await delay(250); // Simulate network latency
+  
+  const searchTerm = query.toLowerCase();
+  
   return propertiesData.filter(
-    (property) =>
-      property.title.toLowerCase().includes(lowerQuery) ||
-      property.address.city.toLowerCase().includes(lowerQuery) ||
-      property.address.street.toLowerCase().includes(lowerQuery) ||
-      property.description.toLowerCase().includes(lowerQuery)
+    property =>
+      property.title.toLowerCase().includes(searchTerm) ||
+      property.description.toLowerCase().includes(searchTerm) ||
+      property.address.street.toLowerCase().includes(searchTerm) ||
+      property.address.city.toLowerCase().includes(searchTerm) ||
+      property.address.state.toLowerCase().includes(searchTerm)
   );
+}
+
+/**
+ * Gets all unique cities from properties
+ * @returns Array of unique city names
+ */
+export function getCities(): string[] {
+  const cities = propertiesData.map(p => p.address.city);
+  return Array.from(new Set(cities)).sort();
+}
+
+/**
+ * Gets all unique property types from properties
+ * @returns Array of unique property types
+ */
+export function getPropertyTypes(): string[] {
+  const types = propertiesData.map(p => p.specs.type);
+  return Array.from(new Set(types)).sort();
+}
+
+/**
+ * Gets min and max price from properties
+ * @returns Object with min and max price values
+ */
+export function getPriceRange(): { min: number; max: number } {
+  const prices = propertiesData.map(p => p.price);
+  return {
+    min: Math.min(...prices),
+    max: Math.max(...prices)
+  };
+}
+
+/**
+ * Gets min and max beds from properties
+ * @returns Object with min and max beds values
+ */
+export function getBedsRange(): { min: number; max: number } {
+  const beds = propertiesData.map(p => p.specs.beds);
+  return {
+    min: Math.min(...beds),
+    max: Math.max(...beds)
+  };
+}
+
+/**
+ * Gets all agents
+ * @returns Array of all agents
+ */
+export function getAgents(): Agent[] {
+  return agents;
 }
