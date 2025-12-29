@@ -37,5 +37,12 @@ export interface FilterParams {
   state?: string;
   type?: 'House' | 'Apartment' | 'Condo';
   minBeds?: number;
-  maxBeds?: number;
+  minBaths?: number;
+  minSqft?: number;
+}
+
+export interface FilterOptions {
+  sortBy?: 'price-asc' | 'price-desc' | 'date-desc' | 'date-asc' | 'sqft-desc';
+  limit?: number;
+  offset?: number;
 }
